@@ -1,0 +1,25 @@
+# Go build artifacts
+*.exe
+*.test
+/bin/
+/build/
+/dist/
+
+# Go mod workspaces
+go.work
+go.work.sum
+
+# IDE settings
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Coverage reports
+coverage.out
+
+# Environment files
+.env
+
+/vendor/

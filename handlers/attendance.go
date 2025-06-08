@@ -10,6 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AddAttendancePeriodHandler godoc
+// @Summary      Add attendance period
+// @Description  Creates a new attendance period for the logged-in user
+// @Tags         attendance
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.AttendancePeriodRequest true "Attendance Period Dates"
+// @Success      201 {object} map[string]string "message: Attendance period created"
+// @Failure      400 {object} map[string]string "Invalid request or validation error"
+// @Failure      500 {object} map[string]string "Internal server error"
+// @Router       /api/attendance-period [post]
 func AddAttendancePeriodHandler(service *services.AttendanceService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req dto.AttendancePeriodRequest
@@ -36,6 +48,16 @@ func AddAttendancePeriodHandler(service *services.AttendanceService) gin.Handler
 	}
 }
 
+// SubmitAttendanceHandler godoc
+// @Summary      Submit attendance
+// @Description  Submits the current user's attendance for the active period
+// @Tags         attendance
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} map[string]string "message: Attendance submitted"
+// @Failure      400 {object} map[string]string "Submission failed"
+// @Router       /api/attendance [post]
 func SubmitAttendanceHandler(service *services.AttendanceService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetUint("user_id")

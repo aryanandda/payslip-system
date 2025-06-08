@@ -10,6 +10,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GeneratePayslipHandler godoc
+// @Summary      Generate payslip
+// @Description  Generates a detailed payslip for the logged-in user based on a payroll ID
+// @Tags         payslip
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path int true "Payroll ID"
+// @Success      200 {object} models.Payslip "Generated payslip data"
+// @Failure      400 {object} map[string]string "Invalid request or payroll ID"
+// @Failure      401 {object} map[string]string "Unauthorized"
+// @Failure      500 {object} map[string]string "Internal server error"
+// @Router       /api/payslip/{id} [get]
 func GeneratePayslipHandler(payslipService *services.PayslipService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID, exists := c.Get("user_id")
@@ -35,6 +48,18 @@ func GeneratePayslipHandler(payslipService *services.PayslipService) gin.Handler
 	}
 }
 
+// GetPayslipSummaryHandler godoc
+// @Summary      Get payslip summary
+// @Description  Retrieves a summary of a payslip by payroll ID (for admin or report access)
+// @Tags         payslip
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path int true "Payroll ID"
+// @Success      200 {object} models.PayslipSummary "Payslip summary data"
+// @Failure      400 {object} map[string]string "Invalid payroll ID"
+// @Failure      500 {object} map[string]string "Internal server error"
+// @Router       /api/payslip-summary/{id} [get]
 func GetPayslipSummaryHandler(payslipSvc *services.PayslipService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idParam := c.Param("id")

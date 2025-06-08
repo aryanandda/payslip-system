@@ -13,6 +13,17 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// Auth Login
+// @Summary      Login
+// @Description  Authenticates a user and returns a JWT token
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request body LoginRequest true "Login credentials"
+// @Success      200 {object} map[string]string "token"
+// @Failure      400 {object} map[string]string "Invalid request"
+// @Failure      401 {object} map[string]string "Unauthorized"
+// @Router       /api/login [post]
 func LoginHandler(authService *services.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req LoginRequest

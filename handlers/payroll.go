@@ -9,6 +9,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// RunPayrollHandler godoc
+// @Summary      Run payroll
+// @Description  Processes payroll for employees for a given period (admin only)
+// @Tags         payroll
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body dto.RunPayrollRequest true "Payroll run details"
+// @Success      200 {object} map[string]string "message: Payroll processed successfully"
+// @Failure      400 {object} map[string]string "Invalid request or processing error"
+// @Failure      401 {object} map[string]string "Unauthorized"
+// @Router       /api/payroll/run [post]
 func RunPayrollHandler(payrollSvc *services.PayrollService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		adminID, exists := c.Get("user_id")

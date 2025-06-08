@@ -8,6 +8,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "payslip-system/docs" // replace with your actual module name
 )
 
 func RegisterRoutes(router *gin.Engine, db *gorm.DB, jwtKey []byte) {
@@ -26,6 +31,8 @@ func RegisterRoutes(router *gin.Engine, db *gorm.DB, jwtKey []byte) {
 	payslipSvc := services.NewPayslipService(attendanceCtrl, overtimeCtrl, reimbursementCtrl, payslipCtrl, payrollCtrl)
 
 	api := router.Group("/api")
+
+	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api.POST("/login", handlers.LoginHandler(authSvc))
 	api.POST("/logout", handlers.LogoutHandler(authSvc))

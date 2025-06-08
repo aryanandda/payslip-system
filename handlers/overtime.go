@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+
 	"payslip-system/constants"
 	"payslip-system/dto"
 	"payslip-system/services"
@@ -9,25 +10,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RunPayrollHandler(payrollSvc *services.PayrollService) gin.HandlerFunc {
+func SubmitOvertimeHandler(overtimeSvc *services.OvertimeService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		adminID, exists := c.Get("user_id")
+		userID, exists := c.Get("user_id")
 		if !exists {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": constants.ErrUnauthorized})
 			return
 		}
 
-		var req dto.RunPayrollRequest
+		var req dto.OvertimeRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": constants.ErrInvalidRequest})
 			return
 		}
 
-		if err := payrollSvc.RunPayroll(req, adminID.(uint)); err != nil {
+		err := overtimeSvc.SubmitOvertime(userID.(uint), req.Hours)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Payroll processed successfully"})
+		c.JSON(http.StatusOK, gin.H{"message": "Overtime submitted successfully"})
 	}
 }

@@ -36,9 +36,13 @@ func ConnectAndMigrate(dsn string) (*gorm.DB, error) {
 
 	err = db.AutoMigrate(
 		&models.User{},
+		&models.AttendancePeriod{},
 		&models.Attendance{},
-		&models.PayrollPeriod{},
+		&models.Payroll{},
+		&models.Payslip{},
 		&models.AuditLog{},
+		&models.Overtime{},
+		&models.Reimbursement{},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run auto migration: %w", err)

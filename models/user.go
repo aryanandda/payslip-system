@@ -7,7 +7,7 @@ type User struct {
 	Username     string `gorm:"unique;not null"`
 	PasswordHash string `gorm:"not null"`
 	IsAdmin      bool   `gorm:"default:false"`
-	Salary       int    // Optional: Monthly base salary
+	Salary       int
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }

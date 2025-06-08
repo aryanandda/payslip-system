@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strings"
 
+	"payslip-system/constants"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -12,7 +14,7 @@ func AuthMiddleware(jwtSecret []byte) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": constants.ErrUnauthorized})
 			c.Abort()
 			return
 		}
@@ -23,14 +25,14 @@ func AuthMiddleware(jwtSecret []byte) gin.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": constants.ErrInvalidToken})
 			c.Abort()
 			return
 		}
 
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": constants.ErrInvalidTokenClaims})
 			c.Abort()
 			return
 		}

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"payslip-system/constants"
 	"payslip-system/services"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ func LoginHandler(authService *services.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req LoginRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": constants.ErrInvalidRequest})
 			return
 		}
 
@@ -32,7 +33,6 @@ func LoginHandler(authService *services.AuthService) gin.HandlerFunc {
 
 func LogoutHandler(authService *services.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Get token from header (optional, depends on blacklist implementation)
 		tokenString := c.GetHeader("Authorization")
 
 		err := authService.Logout(tokenString)

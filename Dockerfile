@@ -5,7 +5,8 @@ FROM golang:1.23 AS builder
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
     GOOS=linux \
-    GOARCH=amd64
+    GOARCH=amd64 \
+    TZ=Asia/Jakarta
 
 # Create working directory
 WORKDIR /app
@@ -24,7 +25,9 @@ RUN go build -o payslip-system ./cmd/main.go
 
 # Final stage - clean image
 FROM alpine:latest
-RUN apk --no-cache add ca-certificates
+RUN apk add --no-cache ca-certificates tzdata && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
 
 WORKDIR /root/
 COPY --from=builder /app/payslip-system .

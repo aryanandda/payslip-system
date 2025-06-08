@@ -9,10 +9,10 @@ import (
 )
 
 type Config struct {
-	AppPort     string // e.g. "8080"
-	DatabaseDSN string // e.g. postgres://user:pass@localhost:5432/db?sslmode=disable
-	JWTSecret   string // for signing tokens
-	Environment string // development | production | test
+	AppPort     string
+	DatabaseDSN string
+	JWTSecret   string
+	Environment string
 }
 
 var (
@@ -20,10 +20,8 @@ var (
 	once sync.Once
 )
 
-// Load reads from .env or environment and returns a singleton Config instance.
 func Load() *Config {
 	once.Do(func() {
-		// Try to load from .env file
 		if err := godotenv.Load(); err != nil {
 			log.Println("No .env file found. Using environment variables.")
 		}
@@ -39,7 +37,6 @@ func Load() *Config {
 	return cfg
 }
 
-// getEnv returns env variable or fallback if not set.
 func getEnv(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
 		return value

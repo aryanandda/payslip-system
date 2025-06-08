@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"time"
-
-	"payslip-system/models"
+	"errors"
 
 	"gorm.io/gorm"
+
+	"payslip-system/models"
 )
 
 type PayrollController struct {
@@ -16,17 +16,26 @@ func NewPayrollController(db *gorm.DB) *PayrollController {
 	return &PayrollController{DB: db}
 }
 
-func (ctrl *PayrollController) CheckOverlap(start, end time.Time) (bool, error) {
-	var count int64
-	err := ctrl.DB.Model(&models.PayrollPeriod{}).
-		Where("start_date <= ? AND end_date >= ?", end, start).
-		Count(&count).Error
-	if err != nil {
-		return false, err
+func (c *PayrollController) CreatePayroll(attendancePeriodID, adminID uint) (uint, error) {
+	payroll := models.Payroll{
+		AttendancePeriodID: attendancePeriodID,
+		CreatedBy:          &adminID,
 	}
-	return count > 0, nil
+
+	if err := c.DB.Create(&payroll).Error; err != nil {
+		return 0, err
+	}
+
+	return payroll.ID, nil
 }
 
-func (ctrl *PayrollController) CreatePayrollPeriod(period *models.PayrollPeriod) error {
-	return ctrl.DB.Create(period).Error
+func (ctrl *PayrollController) GetPayroll(payrollID uint) (*models.Payroll, error) {
+	var payroll models.Payroll
+	if err := ctrl.DB.Where("id = ?", payrollID).First(&payroll).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &payroll, nil
 }

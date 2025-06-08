@@ -32,12 +32,10 @@ func (s *AuthService) Login(username, password string) (string, error) {
 		return "", errors.New("invalid username or password")
 	}
 
-	// Verify password (assume stored hashed)
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		return "", errors.New("invalid username or password")
 	}
 
-	// Generate JWT token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":  user.ID,
 		"username": user.Username,
@@ -53,12 +51,6 @@ func (s *AuthService) Login(username, password string) (string, error) {
 	return tokenString, nil
 }
 
-// For logout, usually JWT tokens are stateless,
-// but you can implement blacklist or token revocation if needed.
-// For now, we'll just have a stub:
-
 func (s *AuthService) Logout(tokenString string) error {
-	// Implement token blacklist if needed.
-	// Otherwise, frontend deletes token client-side.
 	return nil
 }

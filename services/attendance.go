@@ -3,18 +3,20 @@ package services
 import (
 	"errors"
 	"payslip-system/constants"
-	"payslip-system/controllers"
+	"payslip-system/interfaces"
 	"payslip-system/models"
 	"time"
 )
 
 type AttendanceService struct {
-	attendanceCtrl *controllers.AttendanceController
+	attendanceCtrl interfaces.AttendanceControllerInterface
+	nowFunc        func() time.Time
 }
 
-func NewAttendanceService(attCtrl *controllers.AttendanceController) *AttendanceService {
+func NewAttendanceService(ctrl interfaces.AttendanceControllerInterface) *AttendanceService {
 	return &AttendanceService{
-		attendanceCtrl: attCtrl,
+		attendanceCtrl: ctrl,
+		nowFunc:        time.Now,
 	}
 }
 
@@ -55,7 +57,7 @@ func (s *AttendanceService) CreatePeriod(payload *models.AttendancePeriod) error
 }
 
 func (s *AttendanceService) SubmitAttendance(userID uint) error {
-	now := time.Now()
+	now := s.nowFunc()
 
 	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
 		return errors.New(constants.ErrWeekendAttendance)

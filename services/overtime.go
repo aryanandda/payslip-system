@@ -3,18 +3,18 @@ package services
 import (
 	"errors"
 	"fmt"
-	"log"
 	"payslip-system/constants"
-	"payslip-system/controllers"
+	"payslip-system/interfaces"
 	"time"
 )
 
 type OvertimeService struct {
-	ctrl *controllers.OvertimeController
+	ctrl    interfaces.OvertimeControllerInterface
+	nowFunc func() time.Time
 }
 
-func NewOvertimeService(ctrl *controllers.OvertimeController) *OvertimeService {
-	return &OvertimeService{ctrl: ctrl}
+func NewOvertimeService(ctrl interfaces.OvertimeControllerInterface) *OvertimeService {
+	return &OvertimeService{ctrl: ctrl, nowFunc: time.Now}
 }
 
 func (s *OvertimeService) SubmitOvertime(userID uint, hours float64) error {
@@ -30,13 +30,10 @@ func (s *OvertimeService) SubmitOvertime(userID uint, hours float64) error {
 		fmt.Println("Error loading location:", err)
 	}
 
-	now := time.Now().In(loc)
-	today := time.Now().Truncate(24 * time.Hour)
+	now := s.nowFunc().In(loc)
+	today := s.nowFunc().Truncate(24 * time.Hour)
 
 	cutoff := time.Date(now.Year(), now.Month(), now.Day(), 17, 0, 0, 0, now.Location())
-
-	log.Printf("now: %v", now)
-	log.Printf("cutoff: %v", cutoff)
 
 	if now.Before(cutoff) {
 		return errors.New(constants.ErrOvertimeBefore5PM)

@@ -3,14 +3,14 @@ package services
 import (
 	"errors"
 	"payslip-system/constants"
-	"payslip-system/controllers"
+	"payslip-system/interfaces"
 )
 
 type ReimbursementService struct {
-	ctrl *controllers.ReimbursementController
+	ctrl interfaces.ReimbursementControllerInterface
 }
 
-func NewReimbursementService(ctrl *controllers.ReimbursementController) *ReimbursementService {
+func NewReimbursementService(ctrl interfaces.ReimbursementControllerInterface) *ReimbursementService {
 	return &ReimbursementService{ctrl: ctrl}
 }
 

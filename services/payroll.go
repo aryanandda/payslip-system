@@ -2,27 +2,27 @@ package services
 
 import (
 	"errors"
-	"payslip-system/controllers"
 	"payslip-system/dto"
+	"payslip-system/interfaces"
 	"payslip-system/models"
 )
 
 type PayrollService struct {
-	payrollCtrl       *controllers.PayrollController
-	attendanceCtrl    *controllers.AttendanceController
-	userCtrl          *controllers.UserController
-	overtimeCtrl      *controllers.OvertimeController
-	reimbursementCtrl *controllers.ReimbursementController
-	payslipCtrl       *controllers.PayslipController
+	payrollCtrl       interfaces.PayrollControllerInterface
+	attendanceCtrl    interfaces.AttendanceControllerInterface
+	userCtrl          interfaces.UserControllerInterface
+	overtimeCtrl      interfaces.OvertimeControllerInterface
+	reimbursementCtrl interfaces.ReimbursementControllerInterface
+	payslipCtrl       interfaces.PayslipControllerInterface
 }
 
 func NewPayrollService(
-	payrollCtrl *controllers.PayrollController,
-	attendanceCtrl *controllers.AttendanceController,
-	userCtrl *controllers.UserController,
-	overtimeCtrl *controllers.OvertimeController,
-	reimbursementCtrl *controllers.ReimbursementController,
-	payslipCtrl *controllers.PayslipController,
+	payrollCtrl interfaces.PayrollControllerInterface,
+	attendanceCtrl interfaces.AttendanceControllerInterface,
+	userCtrl interfaces.UserControllerInterface,
+	overtimeCtrl interfaces.OvertimeControllerInterface,
+	reimbursementCtrl interfaces.ReimbursementControllerInterface,
+	payslipCtrl interfaces.PayslipControllerInterface,
 ) *PayrollService {
 	return &PayrollService{
 		payrollCtrl:       payrollCtrl,

@@ -56,7 +56,7 @@ func GeneratePayslipHandler(payslipService *services.PayslipService) gin.Handler
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id path int true "Payroll ID"
-// @Success      200 {object} models.PayslipSummary "Payslip summary data"
+// @Success      200 {object} dto.PayslipSummary "Payslip summary data"
 // @Failure      400 {object} map[string]string "Invalid payroll ID"
 // @Failure      500 {object} map[string]string "Internal server error"
 // @Router       /api/payslip-summary/{id} [get]

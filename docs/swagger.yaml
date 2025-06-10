@@ -1,4 +1,51 @@
 definitions:
+  dto.AttendancePeriodRequest:
+    properties:
+      end_date:
+        description: 'format: YYYY-MM-DD'
+        type: string
+      start_date:
+        description: 'format: YYYY-MM-DD'
+        type: string
+    required:
+    - end_date
+    - start_date
+    type: object
+  dto.OvertimeRequest:
+    properties:
+      hours:
+        type: number
+    type: object
+  dto.PayslipSummary:
+    properties:
+      employees:
+        items:
+          properties:
+            fullName:
+              type: string
+            totalPay:
+              type: number
+            userID:
+              type: integer
+          type: object
+        type: array
+      grandTotal:
+        type: number
+    type: object
+  dto.ReimbursementRequest:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+    type: object
+  dto.RunPayrollRequest:
+    properties:
+      attendance_period_id:
+        type: integer
+    required:
+    - attendance_period_id
+    type: object
   handlers.LoginRequest:
     properties:
       password:
@@ -9,9 +56,118 @@ definitions:
     - password
     - username
     type: object
+  models.Payslip:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: integer
+      id:
+        type: integer
+      overtimeHours:
+        type: number
+      overtimePay:
+        type: number
+      payrollID:
+        type: integer
+      presentDays:
+        type: integer
+      rateSalaryPerDay:
+        type: number
+      rateSalaryPerHour:
+        type: number
+      reimbursementTotal:
+        type: number
+      totalTakeHome:
+        type: number
+      user:
+        $ref: '#/definitions/models.User'
+      userID:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      isAdmin:
+        type: boolean
+      passwordHash:
+        type: string
+      salary:
+        type: integer
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
+  /api/attendance:
+    post:
+      consumes:
+      - application/json
+      description: Submits the current user's attendance for the active period
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: Attendance submitted'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Submission failed
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Submit attendance
+      tags:
+      - attendance
+  /api/attendance-period:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new attendance period for the logged-in user
+      parameters:
+      - description: Attendance Period Dates
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AttendancePeriodRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'message: Attendance period created'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request or validation error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add attendance period
+      tags:
+      - attendance
   /api/login:
     post:
       consumes:
@@ -48,4 +204,196 @@ paths:
       summary: Login
       tags:
       - Auth
+  /api/overtime:
+    post:
+      consumes:
+      - application/json
+      description: Submit overtime hours for the logged-in user
+      parameters:
+      - description: Overtime hours
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OvertimeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: Overtime submitted successfully'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request or submission failed
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Submit overtime
+      tags:
+      - overtime
+  /api/payroll/run:
+    post:
+      consumes:
+      - application/json
+      description: Processes payroll for employees for a given period (admin only)
+      parameters:
+      - description: Payroll run details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RunPayrollRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: Payroll processed successfully'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request or processing error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Run payroll
+      tags:
+      - payroll
+  /api/payslip-summary/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a summary of a payslip by payroll ID (for admin or report
+        access)
+      parameters:
+      - description: Payroll ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Payslip summary data
+          schema:
+            $ref: '#/definitions/dto.PayslipSummary'
+        "400":
+          description: Invalid payroll ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get payslip summary
+      tags:
+      - payslip
+  /api/payslip/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Generates a detailed payslip for the logged-in user based on a
+        payroll ID
+      parameters:
+      - description: Payroll ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Generated payslip data
+          schema:
+            $ref: '#/definitions/models.Payslip'
+        "400":
+          description: Invalid request or payroll ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Generate payslip
+      tags:
+      - payslip
+  /api/reimbursement:
+    post:
+      consumes:
+      - application/json
+      description: Submit a reimbursement request for the logged-in user
+      parameters:
+      - description: Reimbursement details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ReimbursementRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: Reimbursement submitted successfully'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request or submission error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Submit reimbursement
+      tags:
+      - reimbursement
 swagger: "2.0"

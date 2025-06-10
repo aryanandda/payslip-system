@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RunPayrollHandler godoc
+// RunPayrollHandler
 // @Summary      Run payroll
 // @Description  Processes payroll for employees for a given period (admin only)
 // @Tags         payroll

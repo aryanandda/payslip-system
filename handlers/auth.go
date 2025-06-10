@@ -13,7 +13,7 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-// Auth Login
+// Auth
 // @Summary      Login
 // @Description  Authenticates a user and returns a JWT token
 // @Tags         Auth
